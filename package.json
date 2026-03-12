@@ -10,9 +10,10 @@
     "start": "next start",
     "db:push": "prisma db push",
     "db:seed": "node prisma/seed.js",
+    "seed:if-empty": "node scripts/seed-if-empty.mjs",
     "db:reset": "prisma db push --force-reset && node prisma/seed.js",
     "migrate:deploy": "node scripts/run-with-db-env.mjs prisma migrate deploy",
-    "vercel:build": "npm run migrate:deploy && npm run build"
+    "vercel:build": "node scripts/vercel-build.mjs"
   },
   "dependencies": {
     "@prisma/client": "^6.19.2",

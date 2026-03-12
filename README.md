@@ -60,7 +60,7 @@
 - `COOKIE_SECURE` は `true`
 - `PASSWORD_RESET_DEBUG` は `false`
 
-`vercel.json` でビルド時に `npm run vercel:build` を実行し、`prisma migrate deploy` のあとに `next build` を実行するようにしています。
+`vercel.json` でビルド時に `npm run vercel:build` を実行し、`prisma migrate deploy` のあとに Preview 環境だけ `seed-if-empty` を流し、その後 `next build` を実行するようにしています。
 
 DB 連携サービスが `DATABASE_URL_UNPOOLED` や `POSTGRES_URL_NON_POOLING` を自動投入する場合、ビルドスクリプト側で `DIRECT_DATABASE_URL` へ自動補完します。Vercel Marketplace 連携を使う場合はこの形を優先してください。
 
@@ -78,12 +78,14 @@ DB 連携サービスが `DATABASE_URL_UNPOOLED` や `POSTGRES_URL_NON_POOLING` 
 | `BLOB_READ_WRITE_TOKEN` | 設定する | 設定する |
 | `UPLOAD_MAX_TOTAL_BYTES` | `4000000` | `4000000` |
 | `PASSWORD_RESET_DEBUG` | `false` | `true` 推奨 |
+| `SEED_PREVIEW_DATA` | 通常不要 | `true` が既定。止めたいときだけ `false` |
 | `RESEND_API_KEY` | 設定する | 通常は未設定。Preview でも送信確認したい場合のみ設定 |
 | `MAIL_FROM` | 送信元アドレスを設定 | 通常は未設定。Preview でも送信確認したい場合のみ設定 |
 
 補足:
 
 - Preview は本番DBを使わず、必ず分離した DB を割り当てる
+- Preview は空DBなら自動でデモ seed が入る
 - Preview でメール誤送信を避けたいなら `PASSWORD_RESET_DEBUG=true` のままにし、`RESEND_API_KEY` と `MAIL_FROM` は入れない
 - `APP_BASE_URL` を Preview で未設定にした場合、再設定リンクはそのリクエストの origin を使って生成する
 
