@@ -7,8 +7,3 @@ node_modules
 public/uploads
 prisma/dev.db
 docs
-.env
-.env.example
-.gitignore
-.env.production.example
-.env.preview.example
