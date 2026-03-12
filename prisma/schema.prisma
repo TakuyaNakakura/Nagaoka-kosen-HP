@@ -1,0 +1,268 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  MEMBER
+}
+
+enum WorkflowStatus {
+  DRAFT
+  PENDING
+  APPROVED
+  RETURNED
+  REJECTED
+}
+
+enum InquiryType {
+  TECHNICAL
+  JOINT
+  GENERAL
+}
+
+enum InquiryStatus {
+  NEW
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum MembershipStatus {
+  NEW
+  REVIEWING
+  COMPLETED
+}
+
+enum NotificationScope {
+  ADMIN
+  MEMBER
+}
+
+model User {
+  id                    String                 @id @default(cuid())
+  email                 String                 @unique
+  passwordHash          String
+  role                  UserRole
+  name                  String
+  active                Boolean                @default(true)
+  companyId             String?                @unique
+  company               Company?               @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  sessions              Session[]
+  passwordResetRequests PasswordResetRequest[]
+  auditLogs             AuditLog[]             @relation("ActorAuditLogs")
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model PasswordResetRequest {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+}
+
+model Company {
+  id                   String               @id @default(cuid())
+  slug                 String               @unique
+  name                 String
+  industry             String
+  city                 String
+  address              String
+  website              String
+  summary              String
+  businessJson         String
+  relatedFieldsJson    String
+  departmentsJson      String
+  acceptanceItemsJson  String
+  keywordsJson         String
+  materialsJson        String
+  galleryJson          String
+  hiringInfo           String
+  message              String
+  internshipAvailable  Boolean              @default(false)
+  siteVisitAvailable   Boolean              @default(false)
+  isPublic             Boolean              @default(true)
+  workflowStatus       WorkflowStatus       @default(APPROVED)
+  lastPublishedAt      DateTime?
+  users                User[]
+  updateRequests       CompanyUpdateRequest[]
+  inquiries            Inquiry[]
+  notifications        Notification[]
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+}
+
+model CompanyUpdateRequest {
+  id           String         @id @default(cuid())
+  companyId    String
+  company      Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  snapshotJson String
+  status       WorkflowStatus @default(DRAFT)
+  reviewComment String?
+  submittedAt  DateTime?
+  reviewedAt   DateTime?
+  reviewerName String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([companyId, status])
+}
+
+model Faculty {
+  id             String         @id @default(cuid())
+  slug           String         @unique
+  name           String
+  department     String
+  specialtiesJson String
+  summary        String
+  contact        String
+  isPublished    Boolean        @default(true)
+  seeds          ResearchSeed[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model ResearchSeed {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  title        String
+  department   String
+  teacherId    String
+  teacher      Faculty  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  keywordsJson String
+  summary      String
+  potential    String
+  collaboration String
+  isPublished  Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model NewsArticle {
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  title          String
+  category       String
+  publishedDate  DateTime
+  summary        String
+  body           String
+  attachmentsJson String
+  isPublished    Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model EventItem {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  title        String
+  eventDate    DateTime
+  place        String
+  target       String
+  deadline     DateTime
+  summary      String
+  details      String
+  contact      String
+  isPublished  Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Inquiry {
+  id               String        @id @default(cuid())
+  type             InquiryType
+  companyName      String
+  contactName      String
+  email            String
+  phone            String
+  title            String
+  message          String
+  relatedCompanyId String?
+  relatedCompany   Company?      @relation(fields: [relatedCompanyId], references: [id], onDelete: SetNull)
+  status           InquiryStatus @default(NEW)
+  assignedTo       String
+  createdAt        DateTime      @default(now())
+
+  @@index([status])
+}
+
+model MembershipApplication {
+  id             String           @id @default(cuid())
+  companyName    String
+  contactName    String
+  email          String
+  membershipType String
+  notes          String
+  status         MembershipStatus @default(NEW)
+  createdAt      DateTime         @default(now())
+
+  @@index([status])
+}
+
+model Guide {
+  id        String   @id @default(cuid())
+  audience  String
+  title     String
+  body      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OrganizationInfo {
+  id                   Int      @id
+  overview             String
+  purposeJson          String
+  officersJson         String
+  rulesJson            String
+  membershipPlansJson  String
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model PermissionProfile {
+  id               String   @id @default(cuid())
+  roleName         String   @unique
+  scope            String
+  capabilitiesJson String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Notification {
+  id        String            @id @default(cuid())
+  scope     NotificationScope
+  companyId String?
+  company   Company?          @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  message   String
+  createdAt DateTime          @default(now())
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  actorUserId String?
+  actorUser   User?    @relation("ActorAuditLogs", fields: [actorUserId], references: [id], onDelete: SetNull)
+  actorLabel  String
+  action      String
+  detail      String
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+}
