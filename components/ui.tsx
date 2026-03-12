@@ -183,17 +183,17 @@ export function CompanyCard({
   };
 }) {
   return (
-    <article className="card">
+    <article className="card company-card">
       <div className="card-top">
-        <div>
-          <h3>{company.name}</h3>
-          <p className="muted small">
+        <div className="card-heading">
+          <h3 className="card-title">{company.name}</h3>
+          <p className="muted small card-meta">
             {company.industry} / {company.city}
           </p>
         </div>
         <WorkflowBadge status={company.workflowStatus} />
       </div>
-      <p>{company.summary}</p>
+      <p className="card-summary">{company.summary}</p>
       <TagRow values={company.relatedFields} />
       <PillRow values={company.departments} />
       <div className="inline-actions">

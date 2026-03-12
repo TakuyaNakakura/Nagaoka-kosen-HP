@@ -47,7 +47,7 @@ export default async function RootLayout({
             <div className="header-inner">
               <Link className="brand" href="/">
                 <span className="brand-kicker">Nagaoka Kosen</span>
-                <span className="brand-name">長岡高専技術協力会 Webサイト</span>
+                <span className="brand-name">長岡高専技術協力会</span>
               </Link>
               <div className="nav-row">
                 <NavLinks items={NAV_ITEMS} className="nav-links" />
