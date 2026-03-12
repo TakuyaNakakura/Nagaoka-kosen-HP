@@ -26,6 +26,10 @@ function run(command, args) {
 }
 
 function shouldSeedPreview() {
+  if (process.env.SEED_DATABASE_IF_EMPTY === "true") {
+    return true;
+  }
+
   if (process.env.SEED_PREVIEW_DATA === "false") {
     return false;
   }
@@ -37,7 +41,7 @@ async function main() {
   await run("npm", ["run", "migrate:deploy"]);
 
   if (shouldSeedPreview()) {
-    console.log("Preview environment detected. Seeding database if empty...");
+    console.log("Seeding database if empty...");
     await run("npm", ["run", "seed:if-empty"]);
   } else {
     console.log("Preview seed step skipped.");

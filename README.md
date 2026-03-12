@@ -79,6 +79,7 @@ DB 連携サービスが `DATABASE_URL_UNPOOLED` や `POSTGRES_URL_NON_POOLING` 
 | `UPLOAD_MAX_TOTAL_BYTES` | `4000000` | `4000000` |
 | `PASSWORD_RESET_DEBUG` | `false` | `true` 推奨 |
 | `SEED_PREVIEW_DATA` | 通常不要 | `true` が既定。止めたいときだけ `false` |
+| `SEED_DATABASE_IF_EMPTY` | 必要時だけ `true` | 必要時だけ `true` |
 | `RESEND_API_KEY` | 設定する | 通常は未設定。Preview でも送信確認したい場合のみ設定 |
 | `MAIL_FROM` | 送信元アドレスを設定 | 通常は未設定。Preview でも送信確認したい場合のみ設定 |
 
@@ -86,6 +87,7 @@ DB 連携サービスが `DATABASE_URL_UNPOOLED` や `POSTGRES_URL_NON_POOLING` 
 
 - Preview は本番DBを使わず、必ず分離した DB を割り当てる
 - Preview は空DBなら自動でデモ seed が入る
+- `main` など Production デプロイに対して一度だけ seed を入れたい場合は、`SEED_DATABASE_IF_EMPTY=true` で再デプロイし、投入後に `false` へ戻す
 - Preview でメール誤送信を避けたいなら `PASSWORD_RESET_DEBUG=true` のままにし、`RESEND_API_KEY` と `MAIL_FROM` は入れない
 - `APP_BASE_URL` を Preview で未設定にした場合、再設定リンクはそのリクエストの origin を使って生成する
 
