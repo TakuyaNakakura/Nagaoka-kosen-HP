@@ -135,7 +135,7 @@ export default async function HomePage({ searchParams }: Props) {
       <section className="section-block">
         <div className="section-header">
           <div>
-            <h2>注目の会員企業</h2>
+            <h2>新規の会員企業</h2>
             <p>研究連携やインターン受入に積極的な企業を掲載しています。</p>
           </div>
           <Link className="ghost-button" href="/companies">
