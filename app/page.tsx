@@ -192,7 +192,7 @@ export default async function HomePage({ searchParams }: Props) {
         </div>
       </section>
 
-      <section className="split">
+      <section className="stack">
         <div className="section-block">
           <div className="section-header">
             <div>
